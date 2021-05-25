@@ -127,6 +127,9 @@ func (m *Manager) task(body []byte, from string) {
 		} else if method == "getLogs" {
 			msg, path := m.apiInst.GetLogs(method)
 			m.mailInst.Send(from, "Subject", msg, path)
+		} else if method == "ping" {
+			msg, path := m.apiInst.Ping(method)
+			m.mailInst.Send(from, "Subject", msg, path)
 		} else {
 			err := errors.New(fmt.Sprint("Unknown method: ", method))
 

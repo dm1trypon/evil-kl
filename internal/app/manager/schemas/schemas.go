@@ -37,4 +37,21 @@ var SchemasMap = map[string]string{
 	},
 	"additionalProperties": true
 }`,
+	"ping": `
+{
+	"type": "object",
+	"required": [
+		"method"
+	],
+	"properties": {
+		"method": {
+			"type": "string",
+			"minLength": 1,
+			"enum": [
+				"ping"
+			]
+		}
+	},
+	"additionalProperties": true
+}`,
 }
