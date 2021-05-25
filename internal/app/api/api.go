@@ -57,6 +57,18 @@ func (a *Api) GetLogs(method string) (string, string) {
 }
 
 /*
+Ping <Api> - ping service
+	Returns <string, string>:
+		1. Body message
+		2. Attached file path
+	Args:
+		1. method <string> - method
+*/
+func (a *Api) Ping(method string) (string, string) {
+	return a.bodyBuilder(method, "", []string{})
+}
+
+/*
 bodyBuilder <Api> - assembling the body of the message
 	Returns <string, string>:
 		1. Body message
@@ -67,6 +79,21 @@ bodyBuilder <Api> - assembling the body of the message
 		3. files <[]string> - list of files to archive
 */
 func (a *Api) bodyBuilder(method, trgtPath string, files []string) (string, string) {
+	if len(files) < 1 {
+		respPositive := ResponsePositive{
+			Method: method,
+			Text:   "OK",
+		}
+
+		respBody, err := json.Marshal(respPositive)
+		if err != nil {
+			logger.ErrorJ(a.lc, fmt.Sprint("Error making response body: ", err.Error()))
+			return "Internal error", ""
+		}
+
+		return string(respBody), ""
+	}
+
 	if err := a.zipperInst.ZipFiles(trgtPath, files); err != nil {
 		respNegative := ResponseNegative{
 			Method: method,
