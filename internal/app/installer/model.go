@@ -10,5 +10,4 @@ type Installer struct {
 	lc           string             // logging category
 	registryInst *registry.Registry // instance of Registry
 	cfg          config.Cfg         // service's config
-	chCritError  chan bool          // error's handler
 }

