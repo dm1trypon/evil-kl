@@ -28,7 +28,7 @@ const (
 /*
 Create <Mail> - init Mail structure
 	Returns <*Mail>:
-		1. Structure pointer
+		1. object's pointer
 */
 func (m *Mail) Create() *Mail {
 	m = &Mail{

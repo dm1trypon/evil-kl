@@ -12,7 +12,7 @@ import (
 /*
 Create <Zipper> - init Zipper structure
 	Returns <*Zipper>:
-		1. Structure pointer
+		1. object's pointer
 */
 func (z *Zipper) Create() *Zipper {
 	z = &Zipper{

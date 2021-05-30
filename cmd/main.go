@@ -29,9 +29,9 @@ func main() {
 	logger.DebugJ(LC, fmt.Sprint("Config: ", spew.Sdump(cfg)))
 
 	managerInst := new(manager.Manager).Create(cfg)
-	go managerInst.Run()
+	managerInst.Run()
 
-	<-managerInst.GetChCritError()
+	<-managerInst.GetChStopService()
 
 	logger.InfoJ(LC, "STOPING SERVICE")
 }

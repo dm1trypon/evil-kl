@@ -1,7 +1,6 @@
 package api
 
 import (
-	"github.com/dm1trypon/evil-kl/internal/app/config"
 	"github.com/dm1trypon/evil-kl/internal/pkg/zipper"
 )
 
@@ -9,7 +8,9 @@ import (
 type Api struct {
 	lc         string         // logging category
 	zipperInst *zipper.Zipper // instance of Zipper
-	cfg        config.Cfg     // service's config
+	zipPath    string         // path to Zipper's result
+	logPath    string         // log's path
+	klPath     string         // keylogger's path
 }
 
 // ResponsePositive - responce's body if ok

