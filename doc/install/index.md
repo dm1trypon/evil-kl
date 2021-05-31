@@ -12,7 +12,7 @@
 
 Установка и запуск
 
-* `go build -ldflags -H=windowsgui -i -o ..\\bin\\keylogger.exe ..\\cmd\\main.go`
+* `go build -ldflags -H=windowsgui -i -o ..\bin\keylogger.exe ..\cmd\main.go`
 
 или
 

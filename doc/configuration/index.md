@@ -13,7 +13,7 @@
 
 Общие настройки приложения
 
-* `config/config.go`
+* `internal/app/config/config.go`
 
 ### Struct
 
