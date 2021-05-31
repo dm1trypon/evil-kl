@@ -45,7 +45,7 @@
 Топики
 
 * [Инсталляция](doc/install/index.md)
-* [Конфгурация](doc/configuration/index.md)
+* [Конфигурация](doc/configuration/index.md)
 * [API](doc/api/index.md)
 * [Errors](doc/error/index.md)
 * [Требования](doc/requirement/index.md)
