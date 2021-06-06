@@ -21,7 +21,7 @@ func (r *Registry) Create() *Registry {
 }
 
 /*
-SetStringValue <Registry> - SetStringValue - sets a string value in the registry
+SetStringValue <Registry> - sets a string value in the registry
 	Returns <error>:
 		1. error
 	Args:
@@ -47,7 +47,7 @@ func (r *Registry) SetStringValue(path, name, value string) error {
 }
 
 /*
-SetStringValue <Registry> - SetStringValue - gets a string value in the registry
+GetStringValue <Registry> - gets a string value in the registry
 	Returns <string, error>:
 		1. value
 		2. error
@@ -71,4 +71,29 @@ func (r *Registry) GetStringValue(path, name string) (string, error) {
 	}
 
 	return value, nil
+}
+
+/*
+DeleteStringValue <Registry> - delete a string value in the registry
+	Returns <string, error>:
+		1. error
+	Args:
+		1. path <string> - path in the registry
+		2. name <string> - name of value
+*/
+func (r *Registry) DeleteStringValue(path, name string) error {
+	key, err := registry.OpenKey(registry.LOCAL_MACHINE, path, registry.QUERY_VALUE|registry.SET_VALUE)
+	if err != nil {
+		logger.ErrorJ(r.lc, fmt.Sprint("Failed opening key by path '", path, "': ", err.Error()))
+		return err
+	}
+
+	defer key.Close()
+
+	if err := key.DeleteValue(name); err != nil {
+		logger.ErrorJ(r.lc, fmt.Sprint("Failed deleting value of '", name, "': ", err.Error()))
+		return err
+	}
+
+	return nil
 }

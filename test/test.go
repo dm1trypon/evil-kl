@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	logger "github.com/dm1trypon/easy-logger"
@@ -50,7 +51,7 @@ func main() {
 
 	for _, body := range bodies {
 		if err := mailInst.Send(cfg.Mail.IMAP.Username,
-			"{\"uuid\":\"ec871226-7f5b-425b-bad4-f52fb6577d1f\",\"description\":\"EVIL_KL\"}",
+			fmt.Sprint("{\"uuid\":\"", cfg.Service.ID, "\",\"description\":\"", cfg.Service.Name, "\"}"),
 			body,
 			"",
 		); err != nil {
