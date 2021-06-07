@@ -99,7 +99,7 @@ func (a *Api) bodyBuilder(method, trgtPath string, files []string) (string, stri
 	if err := a.zipperInst.ZipFiles(trgtPath, files); err != nil {
 		respNegative := ResponseNegative{
 			Method: method,
-			Error:  err.Error(),
+			Error:  fmt.Sprint("Archiving error: ", err.Error()),
 		}
 
 		respBody, err := json.Marshal(respNegative)

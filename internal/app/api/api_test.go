@@ -92,11 +92,11 @@ func TestApi_GetLogs(t *testing.T) {
 		},
 	}
 
-	f, _ := os.OpenFile("logs.txt", os.O_CREATE, 0600)
-	f.Close()
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			f, _ := os.OpenFile("logs.txt", os.O_CREATE, 0600)
+			f.Close()
+
 			got, got1 := tt.a.GetLogs(tt.args.method)
 			if got != tt.want {
 				t.Errorf("Api.GetLogs() got = %v, want %v", got, tt.want)
@@ -104,11 +104,11 @@ func TestApi_GetLogs(t *testing.T) {
 			if got1 != tt.want1 {
 				t.Errorf("Api.GetLogs() got1 = %v, want %v", got1, tt.want1)
 			}
+
+			os.Remove("logs.txt")
+			os.Remove("result.zip")
 		})
 	}
-
-	os.Remove("logs.txt")
-	os.Remove("result.zip")
 }
 
 func TestApi_GetKeyloggerData(t *testing.T) {
@@ -131,13 +131,24 @@ func TestApi_GetKeyloggerData(t *testing.T) {
 			want:  "{\"method\":\"getKeyloggerData\",\"text\":\"See your attachments\"}",
 			want1: "result.zip",
 		},
+		{
+			name: "archiving error",
+			a:    new(Api).Create("", "logs.txt", "keylogger.txt"),
+			args: args{
+				method: "getKeyloggerData",
+			},
+			want:  "{\"method\":\"getKeyloggerData\",\"error\":\"Archiving error: open : The system cannot find the file specified.\"}",
+			want1: "",
+		},
 	}
-
-	f, _ := os.OpenFile("keylogger.txt", os.O_CREATE, 0600)
-	f.Close()
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.name == "success keylogger logs" {
+				f, _ := os.OpenFile("keylogger.txt", os.O_CREATE, 0600)
+				f.Close()
+			}
+
 			got, got1 := tt.a.GetKeyloggerData(tt.args.method)
 			if got != tt.want {
 				t.Errorf("Api.GetKeyloggerData() got = %v, want %v", got, tt.want)
@@ -145,9 +156,9 @@ func TestApi_GetKeyloggerData(t *testing.T) {
 			if got1 != tt.want1 {
 				t.Errorf("Api.GetKeyloggerData() got1 = %v, want %v", got1, tt.want1)
 			}
+
+			os.Remove("keylogger.txt")
+			os.Remove("result.zip")
 		})
 	}
-
-	os.Remove("keylogger.txt")
-	os.Remove("result.zip")
 }
